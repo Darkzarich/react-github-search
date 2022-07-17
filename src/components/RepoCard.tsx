@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Repository } from '../models/models'
 import { useActions, useAppSelector } from '../store'
 
@@ -9,17 +9,15 @@ export const RepoCard = ({ repo }: { repo: Repository }) => {
 
   const addToFavourites = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    setIsFav(true)
     addFavourite(repo.html_url)
   }
 
   const removeFromFavourite = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    setIsFav(false)
     removeFavourite(repo.html_url)
   }
 
-  const [isFav, setIsFav] = useState(favourites.includes(repo.html_url))
+  const isFav = favourites.includes(repo.html_url)
 
   return (
     <div className="group border py-3 px-5 rounded mb-2 hover:shadow-md hover:bg-gray-100 transition-all">
