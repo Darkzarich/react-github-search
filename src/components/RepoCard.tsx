@@ -1,14 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Repository } from '../models/models'
-import { useActions } from '../store'
+import { useActions, useAppSelector } from '../store'
 
 export const RepoCard = ({ repo }: { repo: Repository }) => {
-  const { addFavourite } = useActions()
+  const { addFavourite, removeFavourite } = useActions()
+
+  const favourites = useAppSelector((state) => state.github.favourites)
 
   const addToFavourites = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+    setIsFav(true)
     addFavourite(repo.html_url)
   }
+
+  const removeFromFavourite = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    setIsFav(false)
+    removeFavourite(repo.html_url)
+  }
+
+  const [isFav, setIsFav] = useState(favourites.includes(repo.html_url))
 
   return (
     <div className="group border py-3 px-5 rounded mb-2 hover:shadow-md hover:bg-gray-100 transition-all">
@@ -28,12 +39,23 @@ export const RepoCard = ({ repo }: { repo: Repository }) => {
         <p className="text-sm font-thin">{repo?.description}</p>
       </a>
 
-      <button
-        onClick={addToFavourites}
-        className="py-2 px-4 mt-2 bg-yellow-400 active:bg-yellow-500 rounded hover:shadow-md transition-all"
-      >
-        Favourite ❤
-      </button>
+      {!isFav && (
+        <button
+          onClick={addToFavourites}
+          className="py-2 px-4 mt-2 w-[130px] bg-yellow-400 active:bg-yellow-500 rounded hover:shadow-md transition-all"
+        >
+          Favourite ❤
+        </button>
+      )}
+
+      {isFav && (
+        <button
+          onClick={removeFromFavourite}
+          className="py-2 px-4 mt-2 w-[130px] bg-gray-400 active:bg-gray-500 rounded hover:shadow-md transition-all"
+        >
+          Remove ❌
+        </button>
+      )}
     </div>
   )
 }
