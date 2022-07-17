@@ -16,6 +16,7 @@ export const HomePage = () => {
     isError,
     data: users,
   } = useSearchUsersQuery(lazySearch, {
+    // won't trigger query if skip is false
     skip: lazySearch.length < 2,
   })
 
