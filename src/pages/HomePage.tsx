@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { RepoCard } from '../components/RepoCard'
 import { useDebounce } from '../hooks/debounce'
-import { useSearchUsersQuery } from '../store/github/github.api'
+import {
+  useLazyGetUserReposQuery,
+  useSearchUsersQuery,
+} from '../store/github/github.api'
 
 export const HomePage = () => {
   const [search, setSearch] = useState('')
@@ -15,9 +19,17 @@ export const HomePage = () => {
     skip: lazySearch.length < 2,
   })
 
+  const [fetchRepos, { isLoading: isReposLoading, data: repos }] =
+    useLazyGetUserReposQuery()
+
   useEffect(() => {
     setShowDropdown(lazySearch.length > 3 && !!users && users.length > 0)
   }, [lazySearch, users])
+
+  const getUserRepos = (login: string) => {
+    setShowDropdown(false)
+    fetchRepos(login)
+  }
 
   return (
     <div className="flex justify-center pt-10 mx-auto h-screen w-screen">
@@ -41,6 +53,7 @@ export const HomePage = () => {
             {users?.map((user) => (
               <li
                 className="py-2 px-4 hover:bg-gray-500 hover:text-white transition-colors cursor-pointer"
+                onClick={() => getUserRepos(user.login)}
                 key={user.id}
               >
                 {user.login}
@@ -48,6 +61,16 @@ export const HomePage = () => {
             ))}
           </ul>
         )}
+
+        <div className="container">
+          {isReposLoading && (
+            <p className="text-center">Repositories are loading...</p>
+          )}
+
+          {repos?.map((repo) => (
+            <RepoCard key={repo.id} repo={repo} />
+          ))}
+        </div>
       </div>
     </div>
   )
